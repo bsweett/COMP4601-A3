@@ -9,6 +9,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 
+import edu.carleton.comp4601.assignment3.dao.Transaction;
+
 @Path("/rs")
 public class RS {
 
@@ -51,9 +53,19 @@ public class RS {
 	@Path("reset/{dir}")
 	@Produces(MediaType.TEXT_HTML)
 	public String reset(@PathParam("dir") String dir) {
+		
+		SocialGraph.getInstance().clearAssignment3Data();
+		
 		DataParser parser = new DataParser(homePath + dataFolder);
-		parser.parseContent();
-		return "";
+		parser.parseAssignment3Content();
+		
+		StringBuilder htmlBuilder = new StringBuilder();
+		htmlBuilder.append("<html>");
+		htmlBuilder.append("<head><title> Done Parsing </title></head>");
+		htmlBuilder.append("<body>");
+		htmlBuilder.append("</body></html>");
+		
+		return htmlBuilder.toString();
 	}
 	
 	@GET
@@ -84,6 +96,39 @@ public class RS {
 	@Path("advertising/{category}")
 	@Produces(MediaType.TEXT_HTML)
 	public String advertising(@PathParam("category") String category) {
+		
+		return "";
+	}
+	
+	//Assignment 4
+	
+	@GET
+	@Path("apriori")
+	@Produces(MediaType.TEXT_HTML)
+	public String apriori() {
+		
+		SocialGraph.getInstance().clearAssignment4Data();
+		
+		DataParser parser = new DataParser(homePath + dataFolder);
+		parser.parseAssignment4Content();
+		
+		StringBuilder htmlBuilder = new StringBuilder();
+		htmlBuilder.append("<html>");
+		htmlBuilder.append("<head><title> All Transactions </title></head>");
+		htmlBuilder.append("<body>");
+		for(Transaction tr : SocialGraph.getInstance().getTransactions().values()) {
+			htmlBuilder.append(tr.toHTMLString());
+		}
+		htmlBuilder.append("</body>");
+		htmlBuilder.append("</html>");
+		
+		return htmlBuilder.toString();
+	}
+	
+	@GET
+	@Path("suggest/{products}")
+	@Produces(MediaType.TEXT_HTML)
+	public String suggest(@PathParam("products") String products) {
 		
 		return "";
 	}

@@ -7,6 +7,7 @@ import org.jgrapht.graph.Multigraph;
 
 import edu.carleton.comp4601.assignment3.dao.Page;
 import edu.carleton.comp4601.assignment3.dao.Review;
+import edu.carleton.comp4601.assignment3.dao.Transaction;
 import edu.carleton.comp4601.assignment3.dao.User;
 
 public class SocialGraph {
@@ -16,6 +17,7 @@ public class SocialGraph {
 	private ConcurrentHashMap<String, User> users;
 	private ConcurrentHashMap<String, Page> pages;
 	private ConcurrentHashMap<String, Review> reviews;
+	private ConcurrentHashMap<Integer, Transaction> transactions;
 	
 	private static SocialGraph instance;
 	
@@ -37,6 +39,7 @@ public class SocialGraph {
 		this.users = new ConcurrentHashMap<String, User>();
 		this.pages = new ConcurrentHashMap<String, Page>();
 		this.reviews = new ConcurrentHashMap<String, Review>();
+		this.transactions = new ConcurrentHashMap<Integer, Transaction>();
 	}
 	
 	/**
@@ -70,7 +73,45 @@ public class SocialGraph {
 	public synchronized boolean addReview(Review review) {
 		return this.reviews.put(review.getUser(), review) != null;
 	}
+	
+	public synchronized void clearAssignment3Data() {
+		this.graph = new Multigraph<String, DefaultEdge> (DefaultEdge.class);
+		this.users = new ConcurrentHashMap<String, User>();
+		this.pages = new ConcurrentHashMap<String, Page>();
+		this.reviews = new ConcurrentHashMap<String, Review>();
+	}
+	
+	public synchronized boolean addTransaction(Transaction tr) {
+		return this.transactions.put(tr.getId(), tr) != null;
+	}
+	
+	public synchronized void clearAssignment4Data() {
+		this.transactions = new ConcurrentHashMap<Integer, Transaction>();
+	}
+	
 
+	public synchronized boolean addNewUserVertex(User user) {
+		
+		for(String username : getGraph().vertexSet()) {
+			
+			if(username == user.getName()) {
+				return false;
+			}
+			
+		}
+		
+		return getGraph().addVertex(user.getName());
+	}
+	
+	public synchronized boolean addNewDefaultEdge(User user1, User user2) {
+		
+		if(getGraph().containsEdge(user1.getName(), user2.getName())) {
+			return false;
+		}
+		
+		return getGraph().addEdge(user1.getName(), user2.getName()) != null;
+	}
+	
 	//TODO: Search Functions
 	
 	/*
@@ -86,5 +127,9 @@ public class SocialGraph {
 	
 	public Multigraph<String, DefaultEdge>  getGraph() {
 		return this.graph;
+	}
+	
+	public ConcurrentHashMap<Integer, Transaction>  getTransactions() {
+		return this.transactions;
 	}
 }
