@@ -11,6 +11,7 @@ public class Page {
 	public Page(String title) {
 		this.title = title;
 		this.path = "pages/" + title + ".html";
+		this.reviews = new ArrayList<Review>();
 	}
 
 	public String getTitle() {
