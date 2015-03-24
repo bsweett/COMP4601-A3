@@ -11,6 +11,7 @@ import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
 import edu.carleton.comp4601.assignment3.Main.SocialGraph;
+import edu.carleton.comp4601.assignment3.dao.Rule;
 import edu.carleton.comp4601.assignment3.dao.Transaction;
 import edu.carleton.comp4601.assignment3.util.Tuple;
 
@@ -20,6 +21,7 @@ public class Apriori {
 	private ConcurrentHashMap<Integer, Transaction>  transactions;
 	private ArrayList<Tuple<int[], Integer>> itemSets;
 	private ArrayList<Tuple<int[], Integer>> freqItemSets;
+	private ArrayList<Rule> rules;
 	
 	int itemSetSize;
 	int transactionCount;
@@ -39,15 +41,12 @@ public class Apriori {
 		initItemSets();
 		
 		while(itemSets.size() > 0) {
-			System.out.println("Calculating item sets of size: " + itemSetSize);
 			calculateFrequencies();
-			System.out.println("1");
 			dropItemSets();
-			System.out.println("2");
 			calculateNewItemSets();
-			System.out.println("3");
 		}
 		
+		generateRules();
 		printItemSets();
 		
 		System.out.println("Apriori is COMPLETE!");
@@ -67,10 +66,6 @@ public class Apriori {
 			for(int item: entry.getValue().getItems()) {
 				uniqueItemSet.add(item);
 			}
-		}
-		
-		for(int i: uniqueItemSet) {
-			System.out.println(i);
 		}
 		
 		ArrayList<Integer> uniqueItems = new ArrayList<Integer>(uniqueItemSet);
@@ -185,6 +180,36 @@ public class Apriori {
 		}
 	}
 	
+	private void generateRules() {
+		for(Tuple<int[], Integer> itemSet: freqItemSets) {
+			ArrayList<int[]> subsets = getAllSubsets(itemSet.x);
+			
+			for(int[] setA: subsets) {
+				for(int[] setB: subsets) {
+					boolean contains = false;
+					
+					for(int i=0; i<setA.length; i++) {
+						for(int j=0; j<setB.length; j++) {
+							
+							if(setA[i] == setB[j]) {
+								contains = true;
+								break;
+							}
+						}
+						if(contains) {
+							break;
+						}
+					}
+					if(!contains) {
+						int confidence = itemSet.y/findSupportOfItemSet(setA);
+						
+						rules.add(new Rule(setA, setB, confidence));
+					}
+				}
+			}
+		}
+	}
+	
 	private ArrayList<int[]> getAllSubsets(int[] freqItemSet) {
 
         ArrayList<int[]> allsubsets = new ArrayList<int[]>();
@@ -206,8 +231,13 @@ public class Apriori {
         return allsubsets;
     }
 	
-	private void generateRules() {
-		
+	private int findSupportOfItemSet(int[] itemSet) {
+		for(Tuple<int[], Integer> freqItemSet: freqItemSets) {
+			if(Arrays.equals(freqItemSet.x, itemSet)) {
+				return freqItemSet.y;
+			}
+		}
+		return 0;
 	}
 	
 	private void printItemSets() throws FileNotFoundException, UnsupportedEncodingException {
