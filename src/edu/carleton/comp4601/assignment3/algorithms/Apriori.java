@@ -4,10 +4,13 @@ import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
 
+import edu.carleton.comp4601.assignment3.Main.SocialGraph;
 import edu.carleton.comp4601.assignment3.dao.Transaction;
 import edu.carleton.comp4601.assignment3.util.Tuple;
 
@@ -16,7 +19,8 @@ public class Apriori {
 	private int support;
 	private ConcurrentHashMap<Integer, Transaction>  transactions;
 	private ArrayList<Tuple<int[], Integer>> itemSets;
-	private ArrayList<Tuple<int[], Integer>> prevItemSets;
+	private ArrayList<Tuple<int[], Integer>> freqItemSets;
+	
 	int itemSetSize;
 	int transactionCount;
 	
@@ -24,6 +28,7 @@ public class Apriori {
 	public Apriori(ConcurrentHashMap<Integer, Transaction> transactions) {
 		this.transactions = transactions;
 		this.transactionCount = transactions.size();
+		this.freqItemSets = new ArrayList<Tuple<int[], Integer>>();
 	}
 	
 	//Runs the Apriori algorithm given a support
@@ -34,15 +39,21 @@ public class Apriori {
 		initItemSets();
 		
 		while(itemSets.size() > 0) {
-			
+			System.out.println("Calculating item sets of size: " + itemSetSize);
 			calculateFrequencies();
+			System.out.println("1");
 			dropItemSets();
+			System.out.println("2");
 			calculateNewItemSets();
+			System.out.println("3");
 		}
 		
 		printItemSets();
 		
-		return prevItemSets;
+		System.out.println("Apriori is COMPLETE!");
+		SocialGraph.getInstance().setA4Ready(true);
+		
+		return freqItemSets;
 	}
 
 	//Finds the unique items across all transactions
@@ -56,6 +67,10 @@ public class Apriori {
 			for(int item: entry.getValue().getItems()) {
 				uniqueItemSet.add(item);
 			}
+		}
+		
+		for(int i: uniqueItemSet) {
+			System.out.println(i);
 		}
 		
 		ArrayList<Integer> uniqueItems = new ArrayList<Integer>(uniqueItemSet);
@@ -97,24 +112,27 @@ public class Apriori {
 	
 	//Removes any item sets that are below the support
 	private void dropItemSets() {
-		prevItemSets = itemSets;
+		ArrayList<Tuple<int[], Integer>> tempItemSets = itemSets;
 		itemSets = new ArrayList<Tuple<int[], Integer>>();
 		
-		for(Tuple<int[], Integer> itemSet: prevItemSets) {
+		for(Tuple<int[], Integer> itemSet: tempItemSets) {
 			
 			if(itemSet.y >= support) {
 				itemSets.add(itemSet);
 			} 
 		}
+		freqItemSets.addAll(itemSets);
 	}
 	
 	//Re-create itemsets based on all unique possibilities of remaining sets
 	private void calculateNewItemSets() {
 		itemSetSize++;
-		ArrayList<Tuple<int[], Integer>> newItemSets = new ArrayList<Tuple<int[], Integer>>();
-		int loopCount = 0;
+		HashMap<String, int[]> newItemSets = new HashMap<String, int[]>();
 		
+		int loopCount = 0;
 		for(Tuple<int[], Integer> itemSet: itemSets) {
+			//System.out.println(itemSets.size());
+			//System.out.println("Current count: " + loopCount);
 			loopCount++;
 			int currentLoop = 0;
 			
@@ -150,7 +168,8 @@ public class Apriori {
 					}
 					
 					if(numDifferences == 1) {
-						newItemSets.add(new Tuple<int[], Integer>(newItemSet, 0));
+						Arrays.sort(newItemSet);
+						newItemSets.put(Arrays.toString(newItemSet), newItemSet);
 					}
 				} else {
 					currentLoop++;
@@ -158,7 +177,37 @@ public class Apriori {
 			}
 		}
 		
-		itemSets = newItemSets;
+		itemSets = new ArrayList<Tuple<int[], Integer>>();
+		ArrayList<int[]> newItemsToAdd = new ArrayList<int[]>(newItemSets.values());
+		
+		for(int[] itemSet: newItemsToAdd) {
+			itemSets.add(new Tuple<int[], Integer>(itemSet, 0));
+		}
+	}
+	
+	private ArrayList<int[]> getAllSubsets(int[] freqItemSet) {
+
+        ArrayList<int[]> allsubsets = new ArrayList<int[]>();
+        
+        //2^n subsets given size of set
+        int total = 1 << freqItemSet.length;       
+
+        for (int i = 0; i < total; i++) {
+            int[] subset = new int[total];
+            for (int j = 0; j < freqItemSet.length; j++) {
+                if (((i >> j) & 1) == 1) {
+                    subset[j] = freqItemSet[j];
+                }
+            }
+            Arrays.sort(subset);
+            allsubsets.add(subset);
+        }
+        
+        return allsubsets;
+    }
+	
+	private void generateRules() {
+		
 	}
 	
 	private void printItemSets() throws FileNotFoundException, UnsupportedEncodingException {
@@ -170,7 +219,7 @@ public class Apriori {
 		writer.println("   Item sets that support " + (support * 100.0f) / transactionCount + "% of transactions");
 		writer.println("=============================================================");
 		writer.println("");
-		for(Tuple<int[], Integer> itemSet: prevItemSets) {
+		for(Tuple<int[], Integer> itemSet: freqItemSets) {
 			int[] itemSetArray = itemSet.x;
 			
 			writer.print("Item Set: [");

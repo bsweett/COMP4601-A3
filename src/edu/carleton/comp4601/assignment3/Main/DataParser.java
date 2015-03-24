@@ -12,7 +12,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
-import edu.carleton.comp4601.assignment3.algorithms.Apriori;
 import edu.carleton.comp4601.assignment3.dao.Page;
 import edu.carleton.comp4601.assignment3.dao.Review;
 import edu.carleton.comp4601.assignment3.dao.Transaction;
@@ -62,7 +61,6 @@ public class DataParser {
 		
 		try {
 			parseRetailData();
-			SocialGraph.getInstance().setA4Ready(true);
 			
 			return true;
 		} catch (IOException e) {
@@ -259,7 +257,5 @@ public class DataParser {
 		       SocialGraph.getInstance().addTransaction(tr);
 		    }
 		}
-		Apriori apriori = new Apriori(SocialGraph.getInstance().getTransactions());
-		apriori.runApriori(50);
 	}
 }

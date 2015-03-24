@@ -1,6 +1,7 @@
 package edu.carleton.comp4601.assignment3.Main;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.jgrapht.graph.DefaultEdge;
@@ -8,6 +9,7 @@ import org.jgrapht.graph.Multigraph;
 
 import edu.carleton.comp4601.assignment3.dao.Page;
 import edu.carleton.comp4601.assignment3.dao.Review;
+import edu.carleton.comp4601.assignment3.dao.Rule;
 import edu.carleton.comp4601.assignment3.dao.Transaction;
 import edu.carleton.comp4601.assignment3.dao.User;
 
@@ -18,11 +20,14 @@ public class SocialGraph {
 	private ConcurrentHashMap<String, User> users;
 	private ConcurrentHashMap<String, Page> pages;
 	private ArrayList<Review> reviews;
+	private ArrayList<Rule> rules;
 	private ConcurrentHashMap<Integer, Transaction> transactions;
 	
 	private boolean a3Ready = false;
 	private boolean a4Ready = false;
 	private boolean contextReady = false;
+	
+	private final int CONFIDENCE = 50;
 	
 	private static SocialGraph instance;
 	
@@ -45,6 +50,7 @@ public class SocialGraph {
 		this.pages = new ConcurrentHashMap<String, Page>();
 		this.reviews = new ArrayList<Review>();
 		this.transactions = new ConcurrentHashMap<Integer, Transaction>();
+		this.rules = new ArrayList<Rule>();
 	}
 	
 	/**
@@ -162,5 +168,25 @@ public class SocialGraph {
 	
 	public ConcurrentHashMap<String, User> getUsers() {
 		return this.users;
+	}
+
+	public ArrayList<Rule> getRules() {
+		return rules;
+	}
+
+	public void setRules(ArrayList<Rule> rules) {
+		this.rules = rules;
+	}
+	
+	public ArrayList<int[]> giveSuggestions(int[] products) {
+		ArrayList<int[]> results = new ArrayList<int[]>();
+		Arrays.sort(products);
+		for(Rule r: this.rules) {
+			if(Arrays.equals(r.getSetA(), products) && r.getConfidence() >= CONFIDENCE) {
+				results.add(r.getSetB());
+			}
+		}
+		
+		return null;
 	}
 }

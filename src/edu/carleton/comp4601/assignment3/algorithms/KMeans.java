@@ -8,7 +8,6 @@ import edu.carleton.comp4601.assignment3.dao.User;
 
 public class KMeans {
 
-	private int no_users;
 	public int no_clusters = 15;
 	
 	private static final Random random = new Random();
@@ -17,7 +16,6 @@ public class KMeans {
 	
 	public KMeans(ArrayList<User> users) {
 		this.allUsers = users;
-		this.no_users = users.size();
 	}
 
 	/*
