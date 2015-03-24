@@ -27,7 +27,7 @@ public class SocialGraph {
 	private boolean a4Ready = false;
 	private boolean contextReady = false;
 	
-	private final int CONFIDENCE = 50;
+	private final int CONFIDENCE = 20;
 	
 	private static SocialGraph instance;
 	

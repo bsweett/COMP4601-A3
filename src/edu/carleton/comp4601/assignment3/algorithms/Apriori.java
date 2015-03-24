@@ -31,6 +31,7 @@ public class Apriori {
 		this.transactions = transactions;
 		this.transactionCount = transactions.size();
 		this.freqItemSets = new ArrayList<Tuple<int[], Integer>>();
+		this.rules = new ArrayList<Rule>();
 	}
 	
 	//Runs the Apriori algorithm given a support
@@ -50,6 +51,7 @@ public class Apriori {
 		printItemSets();
 		
 		System.out.println("Apriori is COMPLETE!");
+		SocialGraph.getInstance().setRules(rules);
 		SocialGraph.getInstance().setA4Ready(true);
 		
 		return freqItemSets;
