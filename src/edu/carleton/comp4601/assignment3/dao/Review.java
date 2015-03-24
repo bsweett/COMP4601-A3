@@ -1,8 +1,11 @@
 package edu.carleton.comp4601.assignment3.dao;
 
+import java.util.ArrayList;
+
 public class Review {
 
-	private String user;
+	private String id;
+	private String userId;
 	private String helpfulness;
 	private String profileName;
 	private String score;
@@ -10,17 +13,29 @@ public class Review {
 	private String summary;
 	private String content;
 	
-	public Review(String user, String content) {
-		this.user = user;
+	private ArrayList<Integer> categoryCounts;
+	
+	public Review(String id, String user, String content) {
+		this.id = id;
+		this.userId = user;
 		this.content = content;
+		this.setCategoryCounts(new ArrayList<Integer>());
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 
 	public String getUser() {
-		return user;
+		return userId;
 	}
 
 	public void setUser(String user) {
-		this.user = user;
+		this.userId = user;
 	}
 
 	public String getContent() {
@@ -71,7 +86,15 @@ public class Review {
 		this.summary = summary;
 	}
 
+	public ArrayList<Integer> getCategoryCounts() {
+		return categoryCounts;
+	}
+
+	public void setCategoryCounts(ArrayList<Integer> categoryCounts) {
+		this.categoryCounts = categoryCounts;
+	}
+
 	public String toString() {
-		return this.getUser() + "\n" + this.getContent();
+		return this.id + "\n" + this.getUser() + "\n" + this.getContent();
 	}
 }

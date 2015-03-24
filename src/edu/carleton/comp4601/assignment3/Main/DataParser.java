@@ -42,6 +42,7 @@ public class DataParser {
 			parsePages();
 			parseReviews();
 			parseSocialGraph();
+			SocialGraph.getInstance().setA3Ready(true);
 
 			return true;
 		} catch (IOException e) {
@@ -60,6 +61,7 @@ public class DataParser {
 		
 		try {
 			parseRetailData();
+			SocialGraph.getInstance().setA4Ready(true);
 			
 			return true;
 		} catch (IOException e) {
@@ -113,13 +115,13 @@ public class DataParser {
 		for(File file : list) {
 			Document doc = Jsoup.parse(file, "UTF-8", "http://example.com/");
 			Elements links = doc.select("a[href]");
-			Page page = new Page(doc.title());
+			Page page = new Page(doc.title().trim());
 						
 			for(Element link : links) {
 				
 				// Review content is left empty here because they can have multiple <p> content
 				// We can always get the content from the reviews parsing below if we need it in out pages
-				Review review = new Review(link.text(), "");
+				Review review = new Review("", link.text(), "");
 				page.addReview(review);
 				
 			}
@@ -151,9 +153,8 @@ public class DataParser {
 				content += p.text();
 			}
 			
-			@SuppressWarnings("unused")
-			String userId = "";
-			
+
+			String userId = "";			
 			String profileName = "";
 			String helpfulness = "";
 			String score = "";
@@ -183,7 +184,7 @@ public class DataParser {
 				}
 			}
 			
-			Review review = new Review(doc.title(), content);
+			Review review = new Review(doc.title().trim(), userId, content);
 			review.setProfileName(profileName);
 			review.setHelpfulness(helpfulness);
 			review.setScore(score);

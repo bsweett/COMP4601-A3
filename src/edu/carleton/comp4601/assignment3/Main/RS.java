@@ -22,10 +22,12 @@ public class RS {
 	final String homePath = System.getProperty("user.home");
 	final String dataFolder = "/data/comp4601a3/";
 	
+	private ContentAnalyzer analyzer;
 	private String name;
 
 	public RS() {
 		name = "COMP4601 Restful Service: Benjamin Sweett and Brayden Girard";
+		analyzer = new ContentAnalyzer();
 	}
 
 	// Gets the SDA name as a String
@@ -62,7 +64,7 @@ public class RS {
 		StringBuilder htmlBuilder = new StringBuilder();
 		htmlBuilder.append("<html>");
 		htmlBuilder.append("<head><title> Done Parsing </title></head>");
-		htmlBuilder.append("<body>");
+		htmlBuilder.append("<body><p>Done</p>");
 		htmlBuilder.append("</body></html>");
 		
 		return htmlBuilder.toString();
@@ -72,6 +74,22 @@ public class RS {
 	@Path("context")
 	@Produces(MediaType.TEXT_HTML)
 	public String context() {
+		
+		boolean ready = SocialGraph.getInstance().isA3ParseFinished();
+		StringBuilder htmlBuilder = new StringBuilder();
+		
+		if(!ready) {
+			
+			htmlBuilder.append("<html>");
+			htmlBuilder.append("<head><title> Data Context </title></head>");
+			htmlBuilder.append("<body><p>Data is not finished parsing. Please visit /reset and wait for it to display 'Done'</p>");
+			htmlBuilder.append("</body></html>");
+			
+			return htmlBuilder.toString();
+		}
+		
+		analyzer.setDataGraph(SocialGraph.getInstance());
+		analyzer.run();
 		
 		return "";
 	}
@@ -129,6 +147,19 @@ public class RS {
 	@Path("suggest/{products}")
 	@Produces(MediaType.TEXT_HTML)
 	public String suggest(@PathParam("products") String products) {
+		
+		boolean ready = SocialGraph.getInstance().isA4ParseFinished();
+		StringBuilder htmlBuilder = new StringBuilder();
+		
+		if(!ready) {
+			
+			htmlBuilder.append("<html>");
+			htmlBuilder.append("<head><title> Retail Suggest </title></head>");
+			htmlBuilder.append("<body><p>Transactions are not finished parsing. Please visit /apriori and wait for it to display</p>");
+			htmlBuilder.append("</body></html>");
+			
+			return htmlBuilder.toString();
+		}
 		
 		return "";
 	}

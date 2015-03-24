@@ -1,5 +1,6 @@
 package edu.carleton.comp4601.assignment3.Main;
 
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.jgrapht.graph.DefaultEdge;
@@ -16,8 +17,11 @@ public class SocialGraph {
 	private Multigraph<String, DefaultEdge> graph;
 	private ConcurrentHashMap<String, User> users;
 	private ConcurrentHashMap<String, Page> pages;
-	private ConcurrentHashMap<String, Review> reviews;
+	private ArrayList<Review> reviews;
 	private ConcurrentHashMap<Integer, Transaction> transactions;
+	
+	private boolean a3Ready = false;
+	private boolean a4Ready = false;
 	
 	private static SocialGraph instance;
 	
@@ -38,7 +42,7 @@ public class SocialGraph {
 		this.graph = new Multigraph<String, DefaultEdge> (DefaultEdge.class);
 		this.users = new ConcurrentHashMap<String, User>();
 		this.pages = new ConcurrentHashMap<String, Page>();
-		this.reviews = new ConcurrentHashMap<String, Review>();
+		this.reviews = new ArrayList<Review>();
 		this.transactions = new ConcurrentHashMap<Integer, Transaction>();
 	}
 	
@@ -71,14 +75,14 @@ public class SocialGraph {
 	}
 
 	public synchronized boolean addReview(Review review) {
-		return this.reviews.put(review.getUser(), review) != null;
+		return this.reviews.add(review);
 	}
 	
 	public synchronized void clearAssignment3Data() {
 		this.graph = new Multigraph<String, DefaultEdge> (DefaultEdge.class);
 		this.users = new ConcurrentHashMap<String, User>();
 		this.pages = new ConcurrentHashMap<String, Page>();
-		this.reviews = new ConcurrentHashMap<String, Review>();
+		this.reviews = new ArrayList<Review>();
 	}
 	
 	public synchronized boolean addTransaction(Transaction tr) {
@@ -114,22 +118,39 @@ public class SocialGraph {
 	
 	//TODO: Search Functions
 	
-	/*
-	//Finds a vertex in the graph by url
-	public synchronized PageVertex findVertex(String url) {
-		for (PageVertex vertex : getVertices().values()) {
-		    if(vertex.getUrl().equals(url)) {
-		    	return vertex;
-		    }
-		}
-		return null;
-	}*/
+	public void setA3Ready(boolean ready) {
+		this.a3Ready = ready;
+	}
 	
-	public Multigraph<String, DefaultEdge>  getGraph() {
+	public void setA4Ready(boolean ready) {
+		this.a4Ready = ready;
+	}
+	
+	public boolean isA3ParseFinished() {
+		return this.a3Ready;
+	}
+	
+	public boolean isA4ParseFinished() {
+		return this.a4Ready;
+	}
+	
+	public Multigraph<String, DefaultEdge> getGraph() {
 		return this.graph;
 	}
 	
-	public ConcurrentHashMap<Integer, Transaction>  getTransactions() {
+	public ConcurrentHashMap<Integer, Transaction> getTransactions() {
 		return this.transactions;
+	}
+	
+	public ConcurrentHashMap<String, Page> getPages() {
+		return this.pages;
+	}
+	
+	public ArrayList<Review> getReviews() {
+		return this.reviews;
+	}
+	
+	public ConcurrentHashMap<String, User> getUsers() {
+		return this.users;
 	}
 }

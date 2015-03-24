@@ -2,16 +2,22 @@ package edu.carleton.comp4601.assignment3.dao;
 
 import java.util.ArrayList;
 
+import edu.carleton.comp4601.assignment3.util.Category;
+
 public class Page {
 
 	private String title;
 	private ArrayList<Review> reviews;
+	private Category mainCategory;
+	private Category secondaryCategory;
 	private String path;
 
 	public Page(String title) {
 		this.title = title;
 		this.path = "pages/" + title + ".html";
 		this.reviews = new ArrayList<Review>();
+		this.mainCategory = Category.NONE;
+		this.secondaryCategory = Category.NONE;
 	}
 
 	public String getTitle() {
@@ -34,14 +40,22 @@ public class Page {
 		return getReviews().add(review);
 	}
 	
-	public boolean hasReview(Review review) {
-		for(Review searchReview : getReviews()) {
-			if(searchReview.getContent().equals(review.getContent())) {
-				return true;
+	public Review getPageReviewContentJoined(Review review) {
+		String reviewTitle = review.getId();
+		
+		if(getTitle().equals(reviewTitle)) {
+			String userId = review.getUser();
+			
+			for(Review searchReview : getReviews()) {
+				if(searchReview.getId().equals(userId)) {
+					searchReview.setId(reviewTitle);
+					searchReview.setContent(review.getContent());
+					return searchReview;
+				}
 			}
 		}
 		
-		return false;
+		return null;
 	}
 
 	public String getPath() {
@@ -50,5 +64,25 @@ public class Page {
 
 	public void setPath(String path) {
 		this.path = path;
+	}
+
+	public Category getMainCategory() {
+		return mainCategory;
+	}
+
+	public void setMainCategory(Category mainCategory) {
+		this.mainCategory = mainCategory;
+	}
+
+	public Category getSecondaryCategory() {
+		return secondaryCategory;
+	}
+
+	public void setSecondaryCategory(Category secondaryCategory) {
+		this.secondaryCategory = secondaryCategory;
+	}
+	
+	public String toString() {
+		return this.title + " " + this.mainCategory.toString() + " " + this.secondaryCategory.toString();
 	}
 }
