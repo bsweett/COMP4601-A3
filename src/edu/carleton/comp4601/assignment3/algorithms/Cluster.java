@@ -26,10 +26,9 @@ public class Cluster {
 			ArrayList<double[]> features = new ArrayList<double[]>();
 			
 			// Build array of every users features array
-			for (@SuppressWarnings("unused") User user : users) {
+			for (User user : users) {
 				
-				//TODO: Uncomment once we have features
-				//features.add(user.features);
+				features.add(user.getFeatureRatigns());
 			}
 			
 			// for every user's features array compute the average and
@@ -86,5 +85,17 @@ public class Cluster {
 		for (User user : users)
 			builder.append(user.toString() + ",\n");
 		return builder.deleteCharAt(builder.length() - 2).toString(); 
+	}
+	
+	public String toHTML() {
+		StringBuilder htmlBuilder = new StringBuilder();
+		htmlBuilder.append("<div>");
+
+		for (User user : users) {
+			htmlBuilder.append(user.getName() + ", ");
+		}
+		
+		htmlBuilder.append("</div>");
+		return htmlBuilder.toString();
 	}
 }

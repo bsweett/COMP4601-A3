@@ -19,6 +19,7 @@ public enum Category {
 	
 	private final String type; 
 	private final int id;
+	public static final int rateableLength = Category.values().length - 1;
 	
 	Category(String type, int id) {
 		this.type = type;

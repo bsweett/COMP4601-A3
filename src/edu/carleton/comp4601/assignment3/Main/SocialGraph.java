@@ -22,6 +22,7 @@ public class SocialGraph {
 	
 	private boolean a3Ready = false;
 	private boolean a4Ready = false;
+	private boolean contextReady = false;
 	
 	private static SocialGraph instance;
 	
@@ -83,6 +84,8 @@ public class SocialGraph {
 		this.users = new ConcurrentHashMap<String, User>();
 		this.pages = new ConcurrentHashMap<String, Page>();
 		this.reviews = new ArrayList<Review>();
+		this.a3Ready = false;
+		this.contextReady = false;
 	}
 	
 	public synchronized boolean addTransaction(Transaction tr) {
@@ -91,6 +94,7 @@ public class SocialGraph {
 	
 	public synchronized void clearAssignment4Data() {
 		this.transactions = new ConcurrentHashMap<Integer, Transaction>();
+		this.a4Ready = false;
 	}
 	
 
@@ -116,8 +120,6 @@ public class SocialGraph {
 		return getGraph().addEdge(user1.getName(), user2.getName()) != null;
 	}
 	
-	//TODO: Search Functions
-	
 	public void setA3Ready(boolean ready) {
 		this.a3Ready = ready;
 	}
@@ -126,12 +128,20 @@ public class SocialGraph {
 		this.a4Ready = ready;
 	}
 	
+	public void setContextReady(boolean ready) {
+		this.contextReady = ready;
+	}
+	
 	public boolean isA3ParseFinished() {
 		return this.a3Ready;
 	}
 	
 	public boolean isA4ParseFinished() {
 		return this.a4Ready;
+	}
+	
+	public boolean isContextReady() {
+		return this.contextReady;
 	}
 	
 	public Multigraph<String, DefaultEdge> getGraph() {

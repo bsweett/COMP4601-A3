@@ -15,6 +15,7 @@ public class ContentAnalyzer {
 
 	private SocialGraph data;
 	private final Category[] allValues = Category.values();
+	private boolean contantAnalyzed;
 
 	public ContentAnalyzer() {
 
@@ -22,6 +23,7 @@ public class ContentAnalyzer {
 
 	public void setDataGraph(SocialGraph data) {
 		this.data = data;
+		this.contantAnalyzed = false;
 	}
 
 	public SocialGraph run() {
@@ -32,6 +34,7 @@ public class ContentAnalyzer {
 			joinUsersAndPages();
 		}
 		
+		this.data.setContextReady(true);
 		return this.data;
 	}
 
@@ -170,5 +173,8 @@ public class ContentAnalyzer {
 		}
 	}
 	
+	public boolean isContentAnalzyed() {
+		return this.contantAnalyzed;
+	}
 	
 }
