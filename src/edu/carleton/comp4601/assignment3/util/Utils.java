@@ -39,4 +39,19 @@ public class Utils {
 	    	return new int[] { array.indexOf(max), -1 };
 	    }
 	}
+	
+	public static int[] stringToIntArray(String arr) {
+		
+		String[] items = arr.split("(?!^)");
+
+		int[] results = new int[items.length];
+
+		for (int i = 0; i < items.length; i++) {
+		    try {
+		        results[i] = Integer.parseInt(items[i]);
+		    } catch (NumberFormatException nfe) {};
+		}
+		
+		return results;
+	}
 }

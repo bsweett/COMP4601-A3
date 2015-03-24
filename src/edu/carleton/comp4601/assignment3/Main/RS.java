@@ -1,5 +1,7 @@
 package edu.carleton.comp4601.assignment3.Main;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map.Entry;
 
 import javax.ws.rs.GET;
@@ -13,6 +15,7 @@ import javax.ws.rs.core.UriInfo;
 
 import edu.carleton.comp4601.assignment3.dao.Transaction;
 import edu.carleton.comp4601.assignment3.dao.User;
+import edu.carleton.comp4601.assignment3.util.Utils;
 
 @Path("/rs")
 public class RS {
@@ -173,6 +176,19 @@ public class RS {
 			htmlBuilder.append("</body></html>");
 			
 			return htmlBuilder.toString();
+		} else {
+			int[] productArray = Utils.stringToIntArray(products);
+			ArrayList<int[]> recommendations = SocialGraph.getInstance().giveSuggestions(productArray);
+			
+			htmlBuilder.append("<html>");
+			htmlBuilder.append("<head><title> Retail Suggest </title></head>");
+			htmlBuilder.append("<body><p>Users who bought " + Arrays.toString(productArray) + " also bought the following: </p>");
+			htmlBuilder.append("<ul>");
+			for(int[] items: recommendations) {
+				htmlBuilder.append("<li>" + Arrays.toString(items) + "</li>");
+			}
+			htmlBuilder.append("</ul>");
+			htmlBuilder.append("</body></html>");
 		}
 		
 		return "";
