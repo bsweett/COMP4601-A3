@@ -1,10 +1,9 @@
-package edu.carleton.comp4601.assignment3.Main;
+package edu.carleton.comp4601.assignment3.algorithms;
 
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;

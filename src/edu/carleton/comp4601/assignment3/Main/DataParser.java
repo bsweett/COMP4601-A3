@@ -12,6 +12,7 @@ import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
+import edu.carleton.comp4601.assignment3.algorithms.Apriori;
 import edu.carleton.comp4601.assignment3.dao.Page;
 import edu.carleton.comp4601.assignment3.dao.Review;
 import edu.carleton.comp4601.assignment3.dao.Transaction;

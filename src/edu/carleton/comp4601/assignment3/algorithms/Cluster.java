@@ -26,7 +26,7 @@ public class Cluster {
 			ArrayList<double[]> features = new ArrayList<double[]>();
 			
 			// Build array of every users features array
-			for (User user : users) {
+			for (@SuppressWarnings("unused") User user : users) {
 				
 				//TODO: Uncomment once we have features
 				//features.add(user.features);
