@@ -62,7 +62,6 @@ public class DataParser {
 		
 		try {
 			parseRetailData();
-			SocialGraph.getInstance().setA4Ready(true);
 			
 			return true;
 		} catch (IOException e) {
@@ -259,7 +258,5 @@ public class DataParser {
 		       SocialGraph.getInstance().addTransaction(tr);
 		    }
 		}
-		Apriori apriori = new Apriori(SocialGraph.getInstance().getTransactions());
-		apriori.runApriori(50);
 	}
 }

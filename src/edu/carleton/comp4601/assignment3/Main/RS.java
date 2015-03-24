@@ -1,5 +1,7 @@
 package edu.carleton.comp4601.assignment3.Main;
 
+import java.io.FileNotFoundException;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map.Entry;
@@ -13,6 +15,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 
+import edu.carleton.comp4601.assignment3.algorithms.Apriori;
+import edu.carleton.comp4601.assignment3.dao.Rule;
 import edu.carleton.comp4601.assignment3.dao.Transaction;
 import edu.carleton.comp4601.assignment3.dao.User;
 import edu.carleton.comp4601.assignment3.util.Utils;
@@ -27,6 +31,7 @@ public class RS {
 
 	final String homePath = System.getProperty("user.home");
 	final String dataFolder = "/data/comp4601a3/";
+	final int SUPPORT = 50;
 	
 	private ContentAnalyzer analyzer;
 	private String name;
@@ -147,13 +152,29 @@ public class RS {
 		DataParser parser = new DataParser(homePath + dataFolder);
 		parser.parseAssignment4Content();
 		
+		Apriori apriori = new Apriori(SocialGraph.getInstance().getTransactions());
+		
+		try {
+			apriori.runApriori(SUPPORT);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		ArrayList<Rule> rules = SocialGraph.getInstance().getRules();
+		
 		StringBuilder htmlBuilder = new StringBuilder();
 		htmlBuilder.append("<html>");
 		htmlBuilder.append("<head><title> All Transactions </title></head>");
-		htmlBuilder.append("<body>");
-		for(Transaction tr : SocialGraph.getInstance().getTransactions().values()) {
-			htmlBuilder.append(tr.toHTMLString());
+		htmlBuilder.append("<body><p>The following rules were created: </p>");
+		htmlBuilder.append("<ul>");
+		for(Rule rule: rules) {
+			htmlBuilder.append("<li>" + rule.getSetA() + " ---> " + rule.getSetB() + " " + rule.getConfidence() + "% confidence" + "</li>");
 		}
+		htmlBuilder.append("</ul>");
 		htmlBuilder.append("</body>");
 		htmlBuilder.append("</html>");
 		
