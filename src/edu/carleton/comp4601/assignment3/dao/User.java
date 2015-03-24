@@ -16,19 +16,24 @@ public class User {
 	private String name;
 	private ArrayList<Category> allFeatures;
 	private Set<Category> uniqueFeatures;
-	private Integer cluster;
+	private int cluster;
+	private int lastCluster;
 	private ArrayList<Page> visitedPages;
 	private Set<Review> reviews;
 	private String path;
+	private double[] featureRatings;
 
 	public User(String name, Integer cluster) {
 		this.name = name;
 		this.cluster = cluster;
+		this.cluster = -1;
+		this.lastCluster = -2;
 		this.path = "users/" + name + ".html";
 		this.visitedPages = new ArrayList<Page>();
 		this.uniqueFeatures = new HashSet<Category>();
 		this.setAllFeatures(new ArrayList<Category>());
 		this.setReviews(new HashSet<Review>());
+		this.featureRatings = new double[Category.rateableLength];
 	}
 
 	public String getName() {
@@ -39,12 +44,25 @@ public class User {
 		this.name = name;
 	}
 
-	public Integer getCluster() {
+	public int getCluster() {
 		return cluster;
 	}
 
-	public void setCluster(Integer cluster) {
+	public void setCluster(int cluster) {
 		this.cluster = cluster;
+	}
+	
+	public int getLastCluster() {
+		return this.lastCluster;
+	}
+	
+	public void setLastCluster(int lastcluster) {
+		this.lastCluster = lastcluster;
+	}
+	
+	// Update the saved cluster from iteration to iteration
+	public void update() {
+		this.lastCluster = this.cluster;
 	}
 
 	public ArrayList<Page> getVisitedPages() {
@@ -96,9 +114,7 @@ public class User {
 				addUniqueFeature(second);
 				addFeature(second);
 			}
-
 		}
-
 	}
 
 	/**
@@ -111,8 +127,12 @@ public class User {
 
 		Map<Category, Integer> counts = new HashMap<Category, Integer>();
 		
+		int index = 0;
 		for(Category c : this.allFeatures) {
-			counts.put(c, Collections.frequency(this.allFeatures, c));
+			int frequency = Collections.frequency(this.allFeatures, c);
+			counts.put(c, frequency);
+			
+			this.featureRatings[index] = (double) frequency;
 		}
 		
 		Entry<Category,Integer> maxEntry = new AbstractMap.SimpleEntry<Category, Integer>(Category.NONE, 0);
@@ -178,6 +198,20 @@ public class User {
 	
 	public boolean addReview(Review review) {
 		return this.reviews.add(review);
+	}
+	
+	public double[] getFeatureRatigns() {
+		return this.featureRatings;
+	}
+	
+	public double distance(User b) {
+		double rtn = 0.0;
+		// Assumes a and b have same number of features
+		for (int i = 0; i < this.featureRatings.length; i++) {
+			rtn += (this.featureRatings[i] - b.getFeatureRatigns()[i] )
+					* (this.featureRatings[i]  - b.getFeatureRatigns()[i]);
+		}
+		return Math.sqrt(rtn);
 	}
 
 	public String toString() {

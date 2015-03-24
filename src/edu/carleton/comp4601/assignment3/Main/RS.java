@@ -1,8 +1,9 @@
 package edu.carleton.comp4601.assignment3.Main;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Map.Entry;
 
@@ -15,9 +16,10 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 
+import edu.carleton.comp4601.assignment3.algorithms.Cluster;
+import edu.carleton.comp4601.assignment3.algorithms.KMeans;
 import edu.carleton.comp4601.assignment3.algorithms.Apriori;
 import edu.carleton.comp4601.assignment3.dao.Rule;
-import edu.carleton.comp4601.assignment3.dao.Transaction;
 import edu.carleton.comp4601.assignment3.dao.User;
 import edu.carleton.comp4601.assignment3.util.Utils;
 
@@ -94,7 +96,7 @@ public class RS {
 		
 		if(!ready) {
 			
-			htmlBuilder.append("<body><p>Data is not finished parsing. Please visit /reset and wait for it to display 'Done'</p>");
+			htmlBuilder.append("<body><p>ERROR: Data is not finished parsing. Please visit /reset and wait for it to display 'Done'</p>");
 			htmlBuilder.append("</body></html>");
 			
 			return htmlBuilder.toString();
@@ -121,7 +123,34 @@ public class RS {
 	@Produces(MediaType.TEXT_HTML)
 	public String community() {
 		
-		return "";
+		boolean ready = SocialGraph.getInstance().isContextReady();
+		StringBuilder htmlBuilder = new StringBuilder();
+		
+		htmlBuilder.append("<html>");
+		htmlBuilder.append("<head><title> Community </title></head>");
+		
+		if(!ready) {
+			
+			htmlBuilder.append("<body><p>ERROR: Please visit /context first and wait for profiles to be displayed</p>");
+			htmlBuilder.append("</body></html>");
+			return htmlBuilder.toString();
+		}
+		
+		htmlBuilder.append("<body><table>");
+		
+		KMeans algo = new KMeans(new ArrayList<User>(SocialGraph.getInstance().getUsers().values()));
+		List<Cluster> groups = algo.run();
+		for(int i = 0; i < groups.size(); i++) {
+			Cluster cluster = groups.get(i);
+			htmlBuilder.append("<tr>");
+			htmlBuilder.append("<td>" + i + "</td>");
+			htmlBuilder.append("<td>" + cluster.toHTML() + "</td>");
+			htmlBuilder.append("</tr>");
+		}
+	
+		htmlBuilder.append("</table></body></html>");
+		
+		return htmlBuilder.toString();
 	}
 	
 	@GET
@@ -211,7 +240,7 @@ public class RS {
 			htmlBuilder.append("</ul>");
 			htmlBuilder.append("</body></html>");
 		}
-		
+
 		return "";
 	}
 }
