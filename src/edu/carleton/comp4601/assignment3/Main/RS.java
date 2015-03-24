@@ -1,5 +1,7 @@
 package edu.carleton.comp4601.assignment3.Main;
 
+import java.util.Map.Entry;
+
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -10,6 +12,7 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 
 import edu.carleton.comp4601.assignment3.dao.Transaction;
+import edu.carleton.comp4601.assignment3.dao.User;
 
 @Path("/rs")
 public class RS {
@@ -78,10 +81,11 @@ public class RS {
 		boolean ready = SocialGraph.getInstance().isA3ParseFinished();
 		StringBuilder htmlBuilder = new StringBuilder();
 		
+		htmlBuilder.append("<html>");
+		htmlBuilder.append("<head><title> Data Context </title></head>");
+		
 		if(!ready) {
 			
-			htmlBuilder.append("<html>");
-			htmlBuilder.append("<head><title> Data Context </title></head>");
 			htmlBuilder.append("<body><p>Data is not finished parsing. Please visit /reset and wait for it to display 'Done'</p>");
 			htmlBuilder.append("</body></html>");
 			
@@ -89,9 +93,19 @@ public class RS {
 		}
 		
 		analyzer.setDataGraph(SocialGraph.getInstance());
-		analyzer.run();
+		SocialGraph updatedGraph = analyzer.run();
+		SocialGraph.setInstance(updatedGraph);
 		
-		return "";
+		htmlBuilder.append("<body><table>");
+		
+		for(Entry<String, User> entry : SocialGraph.getInstance().getUsers().entrySet()) {
+			User user = entry.getValue();
+			htmlBuilder.append("<tr>" + user.toHTML() + "</tr>");
+		}
+		
+		htmlBuilder.append("</table></body></html>");
+		
+		return htmlBuilder.toString();
 	}
 	
 	@GET

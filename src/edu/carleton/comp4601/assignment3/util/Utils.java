@@ -25,6 +25,14 @@ public class Utils {
 	        }
 	    }
 	    
+	    // If the top hit is action, look for another category with greater than 10% of action
+	    // results. Make it the main category
+	    if( array.indexOf(max) == 0 ) {
+	    	if ( secondMax > (max * 0.10)) {
+	    		return new int[] { array.indexOf(secondMax), array.indexOf(max) };
+	    	}
+	    }
+	    
 	    if(secondMax > (max * 0.65)) {
 	    	return new int[] { array.indexOf(max), array.indexOf(secondMax) };
 	    } else {

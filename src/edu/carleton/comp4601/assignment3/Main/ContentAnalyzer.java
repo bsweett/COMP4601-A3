@@ -24,13 +24,15 @@ public class ContentAnalyzer {
 		this.data = data;
 	}
 
-	public void run() {
+	public SocialGraph run() {
 		if(this.data != null) {
 			findReviewsCategories();
 			joinReviewsAndPages();
 			findPagesCategories();
 			joinUsersAndPages();
 		}
+		
+		return this.data;
 	}
 
 	/**
@@ -144,6 +146,7 @@ public class ContentAnalyzer {
 		for(Entry<String, User> entry : data.getUsers().entrySet()) {
 			User user = entry.getValue();
 			
+			// Join Pages
 			for(Entry<String, Page> entry2 : data.getPages().entrySet()) {
 				Page page = entry2.getValue();
 				int didVisit = user.getIndexOfVisitedPage(page);
@@ -153,9 +156,18 @@ public class ContentAnalyzer {
 				}
 			}
 			
+			// Join Reviews
+			for(Review review : data.getReviews()) {
+				
+				if(review.getUser().equalsIgnoreCase(user.getName())) {
+					user.addReview(review);
+				}
+				
+			}
+			
+			user.buildFeatureList();
 			data.getUsers().put(user.getName(), user);
 		}
-		
 	}
 	
 	

@@ -1,7 +1,12 @@
 package edu.carleton.comp4601.assignment3.dao;
 
+import java.util.AbstractMap;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Map.Entry;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import edu.carleton.comp4601.assignment3.util.Category;
@@ -13,6 +18,7 @@ public class User {
 	private Set<Category> uniqueFeatures;
 	private Integer cluster;
 	private ArrayList<Page> visitedPages;
+	private Set<Review> reviews;
 	private String path;
 
 	public User(String name, Integer cluster) {
@@ -22,6 +28,7 @@ public class User {
 		this.visitedPages = new ArrayList<Page>();
 		this.uniqueFeatures = new HashSet<Category>();
 		this.setAllFeatures(new ArrayList<Category>());
+		this.setReviews(new HashSet<Review>());
 	}
 
 	public String getName() {
@@ -102,22 +109,21 @@ public class User {
 	 */
 	public Category getTopCategory() {
 
-		Category maxKey = Category.NONE;
-		int maxCounts = 0;
-
-		int[] counts = new int[this.allFeatures.size()];
+		Map<Category, Integer> counts = new HashMap<Category, Integer>();
 		
-		for (int i=0; i < this.allFeatures.size(); i++) {
-			int id = this.allFeatures.get(i).getId();
-			counts[id]++;
-			
-			if (maxCounts < counts[id]) {
-				maxCounts = counts[id];
-				maxKey = this.allFeatures.get(i);
-			}
+		for(Category c : this.allFeatures) {
+			counts.put(c, Collections.frequency(this.allFeatures, c));
 		}
 		
-		return maxKey;
+		Entry<Category,Integer> maxEntry = new AbstractMap.SimpleEntry<Category, Integer>(Category.NONE, 0);
+
+		for(Entry<Category,Integer> entry : counts.entrySet()) {
+		    if (maxEntry == null || entry.getValue() > maxEntry.getValue()) {
+		        maxEntry = entry;
+		    }
+		}
+		
+		return maxEntry.getKey();
 	}
 
 	/**
@@ -162,8 +168,54 @@ public class User {
 		return this.allFeatures.add(genre);
 	}
 
+	public Set<Review> getReviews() {
+		return reviews;
+	}
+
+	public void setReviews(HashSet<Review> reviews) {
+		this.reviews = reviews;
+	}
+	
+	public boolean addReview(Review review) {
+		return this.reviews.add(review);
+	}
+
 	public String toString() {
 		return this.name + " : " + this.getTopCategory().toString() + " : " + this.path + " : " + this.cluster;
+	}
+	
+	public String toHTML() {
+		
+		StringBuilder htmlBuilder = new StringBuilder();
+		htmlBuilder.append("<div>");
+		htmlBuilder.append("<h3>" + this.getName() + "</h3>");
+		htmlBuilder.append("<h5> User Info </h5>");
+		htmlBuilder.append("<p>" + "Favourite Genre: " + this.getTopCategory().toString() + "</p>");
+		htmlBuilder.append("<p>" + "# of movies seen: " + this.getTotalReviews() + "</p>");
+		htmlBuilder.append("<h5> Movies Seen </h5>");
+		htmlBuilder.append("<ul>");
+		
+		for (Page page : this.visitedPages) {
+			htmlBuilder.append("<li>");
+			htmlBuilder.append(page.toString());
+			htmlBuilder.append("</li>");
+		}
+		
+		htmlBuilder.append("</ul>");
+		
+		/*
+		htmlBuilder.append("<h5> Reviews </h5>");
+		htmlBuilder.append("<ul>");
+		
+		for (Review review : this.reviews) {
+			htmlBuilder.append("<li>");
+			htmlBuilder.append(review.toString());
+			htmlBuilder.append("</li>");
+		}
+		
+		htmlBuilder.append("</ul>");*/
+		htmlBuilder.append("</div>");
+		return htmlBuilder.toString();
 	}
 
 }
