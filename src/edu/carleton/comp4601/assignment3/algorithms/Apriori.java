@@ -24,6 +24,7 @@ public class Apriori {
 	public Apriori(ConcurrentHashMap<Integer, Transaction> transactions) {
 		this.transactions = transactions;
 		this.transactionCount = transactions.size();
+		this.prevItemSets = new ArrayList<Tuple<int[], Integer>>();
 	}
 	
 	//Runs the Apriori algorithm given a support
@@ -34,13 +35,18 @@ public class Apriori {
 		initItemSets();
 		
 		while(itemSets.size() > 0) {
-			
+			System.out.println("Calculating item sets of size: " + itemSetSize);
 			calculateFrequencies();
+			System.out.println("1");
 			dropItemSets();
+			System.out.println("2");
 			calculateNewItemSets();
+			System.out.println("3");
 		}
 		
 		printItemSets();
+		
+		System.out.println("Apriori is COMPLETE!");
 		
 		return prevItemSets;
 	}
@@ -56,6 +62,10 @@ public class Apriori {
 			for(int item: entry.getValue().getItems()) {
 				uniqueItemSet.add(item);
 			}
+		}
+		
+		for(int i: uniqueItemSet) {
+			System.out.println(i);
 		}
 		
 		ArrayList<Integer> uniqueItems = new ArrayList<Integer>(uniqueItemSet);
@@ -97,10 +107,11 @@ public class Apriori {
 	
 	//Removes any item sets that are below the support
 	private void dropItemSets() {
-		prevItemSets = itemSets;
+		prevItemSets.addAll(itemSets);
+		ArrayList<Tuple<int[], Integer>> tempItemSets = itemSets;
 		itemSets = new ArrayList<Tuple<int[], Integer>>();
 		
-		for(Tuple<int[], Integer> itemSet: prevItemSets) {
+		for(Tuple<int[], Integer> itemSet: tempItemSets) {
 			
 			if(itemSet.y >= support) {
 				itemSets.add(itemSet);
@@ -111,7 +122,7 @@ public class Apriori {
 	//Re-create itemsets based on all unique possibilities of remaining sets
 	private void calculateNewItemSets() {
 		itemSetSize++;
-		ArrayList<Tuple<int[], Integer>> newItemSets = new ArrayList<Tuple<int[], Integer>>();
+		HashSet<Tuple<int[], Integer>> newItemSets = new HashSet<Tuple<int[], Integer>>();
 		int loopCount = 0;
 		
 		for(Tuple<int[], Integer> itemSet: itemSets) {
@@ -119,6 +130,7 @@ public class Apriori {
 			int currentLoop = 0;
 			
 			for(Tuple<int[], Integer> nextItemSet: itemSets) {
+				System.out.println("Hey");
 				if(currentLoop == loopCount) {
 					int[] itemSetArray = itemSet.x;
 					int[] nextItemSetArray = nextItemSet.x;
@@ -158,7 +170,7 @@ public class Apriori {
 			}
 		}
 		
-		itemSets = newItemSets;
+		itemSets = new ArrayList<Tuple<int[], Integer>>(newItemSets);
 	}
 	
 	private void printItemSets() throws FileNotFoundException, UnsupportedEncodingException {

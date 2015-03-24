@@ -260,6 +260,6 @@ public class DataParser {
 		    }
 		}
 		Apriori apriori = new Apriori(SocialGraph.getInstance().getTransactions());
-		apriori.runApriori(50);
+		apriori.runApriori(5);
 	}
 }
