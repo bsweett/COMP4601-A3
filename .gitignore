@@ -2,3 +2,6 @@
 *.settings
 /build
 *.classpath
+
+##Just for you Brayden 
+*.DS_Store
