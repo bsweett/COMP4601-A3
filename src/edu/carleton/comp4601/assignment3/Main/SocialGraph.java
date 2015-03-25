@@ -27,7 +27,7 @@ public class SocialGraph {
 	private boolean a4Ready = false;
 	private boolean contextReady = false;
 	
-	private final int CONFIDENCE = 20;
+	private final int CONFIDENCE = 50;
 	
 	private static SocialGraph instance;
 	
@@ -186,7 +186,6 @@ public class SocialGraph {
 				results.add(r.getSetB());
 			}
 		}
-		
-		return null;
+		return results;
 	}
 }

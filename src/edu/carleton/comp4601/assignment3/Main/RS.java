@@ -201,7 +201,7 @@ public class RS {
 		htmlBuilder.append("<body><p>The following rules were created: </p>");
 		htmlBuilder.append("<ul>");
 		for(Rule rule: rules) {
-			htmlBuilder.append("<li>" + rule.getSetA() + " ---> " + rule.getSetB() + " " + rule.getConfidence() + "% confidence" + "</li>");
+			htmlBuilder.append("<li>" + Arrays.toString(rule.getSetA()) + " ---> " + Arrays.toString(rule.getSetB()) + " " + rule.getConfidence() + "% confidence" + "</li>");
 		}
 		htmlBuilder.append("</ul>");
 		htmlBuilder.append("</body>");
@@ -214,7 +214,6 @@ public class RS {
 	@Path("suggest/{products}")
 	@Produces(MediaType.TEXT_HTML)
 	public String suggest(@PathParam("products") String products) {
-		
 		boolean ready = SocialGraph.getInstance().isA4ParseFinished();
 		StringBuilder htmlBuilder = new StringBuilder();
 		
@@ -239,8 +238,7 @@ public class RS {
 			}
 			htmlBuilder.append("</ul>");
 			htmlBuilder.append("</body></html>");
+			return htmlBuilder.toString();
 		}
-
-		return "";
 	}
 }

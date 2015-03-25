@@ -7,13 +7,16 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import edu.carleton.comp4601.assignment3.Main.SocialGraph;
 import edu.carleton.comp4601.assignment3.dao.Rule;
 import edu.carleton.comp4601.assignment3.dao.Transaction;
 import edu.carleton.comp4601.assignment3.util.Tuple;
+import edu.carleton.comp4601.assignment3.util.Utils;
 
 public class Apriori {
 	
@@ -183,9 +186,20 @@ public class Apriori {
 	}
 	
 	private void generateRules() {
+		HashMap<String, Rule> tempRules = new HashMap<String, Rule>();
+		
 		for(Tuple<int[], Integer> itemSet: freqItemSets) {
-			ArrayList<int[]> subsets = getAllSubsets(itemSet.x);
-			
+			 Set<Set<Integer>> setOfSubsets = new HashSet<Set<Integer>>();
+			 setOfSubsets = powerSet(Utils.intArrayToSet(itemSet.x));
+			 
+			 ArrayList<int[]> subsets = new ArrayList<int[]>();
+			 
+			 for(Set<Integer> set: setOfSubsets) {
+				 if(set.size() > 0 && set.size() != itemSet.x.length) {
+					 subsets.add(Utils.setToIntArray(set));
+				 }
+			 }
+			 
 			for(int[] setA: subsets) {
 				for(int[] setB: subsets) {
 					boolean contains = false;
@@ -203,34 +217,35 @@ public class Apriori {
 						}
 					}
 					if(!contains) {
-						int confidence = itemSet.y/findSupportOfItemSet(setA);
-						
-						rules.add(new Rule(setA, setB, confidence));
+						float numerator = itemSet.y;
+						float denominator = findSupportOfItemSet(setA);
+						float result = numerator/denominator;
+						tempRules.put(Arrays.toString(setA) + Arrays.toString(setB), new Rule(setA, setB, Math.round(result * 100.0f)));
+						//rules.add(new Rule(setA, setB, Math.round(result * 100.0f)));
 					}
 				}
 			}
 		}
+		rules.addAll(new ArrayList<Rule>(tempRules.values()));
 	}
-	
-	private ArrayList<int[]> getAllSubsets(int[] freqItemSet) {
 
-        ArrayList<int[]> allsubsets = new ArrayList<int[]>();
-        
-        //2^n subsets given size of set
-        int total = 1 << freqItemSet.length;       
-
-        for (int i = 0; i < total; i++) {
-            int[] subset = new int[total];
-            for (int j = 0; j < freqItemSet.length; j++) {
-                if (((i >> j) & 1) == 1) {
-                    subset[j] = freqItemSet[j];
-                }
-            }
-            Arrays.sort(subset);
-            allsubsets.add(subset);
+	public static Set<Set<Integer>> powerSet(Set<Integer> originalSet) {
+        Set<Set<Integer>> sets = new HashSet<Set<Integer>>();
+        if (originalSet.isEmpty()) {
+            sets.add(new HashSet<Integer>());
+            return sets;
         }
-        
-        return allsubsets;
+        List<Integer> list = new ArrayList<Integer>(originalSet);
+        Integer head = list.get(0);
+        Set<Integer> rest = new HashSet<Integer>(list.subList(1, list.size()));
+        for (Set<Integer> set : powerSet(rest)) {
+            Set<Integer> newSet = new HashSet<Integer>();
+            newSet.add(head);
+            newSet.addAll(set);
+            sets.add(newSet);
+            sets.add(set);
+        }
+        return sets;
     }
 	
 	private int findSupportOfItemSet(int[] itemSet) {
