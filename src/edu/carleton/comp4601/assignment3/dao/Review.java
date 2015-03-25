@@ -1,6 +1,8 @@
 package edu.carleton.comp4601.assignment3.dao;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 
 public class Review {
 
@@ -93,8 +95,24 @@ public class Review {
 	public void setCategoryCounts(ArrayList<Integer> categoryCounts) {
 		this.categoryCounts = categoryCounts;
 	}
+	
+	public String getDateFromUnixTS() {
+		Date date =  new Date(this.time*1000L);
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss z"); 
+		return sdf.format(date);
+	}
 
 	public String toString() {
 		return this.id + "\n" + this.getUser() + "\n" + this.getContent();
+	}
+	
+	public String toHTML() {
+		StringBuilder htmlBuilder = new StringBuilder();
+		htmlBuilder.append("<div>");
+		htmlBuilder.append("<h5>"+ this.getUser() + "</h5>");
+		htmlBuilder.append("<p>" + this.getDateFromUnixTS() + "</p>");
+		htmlBuilder.append("<p>"+ this.getContent()+ "</p>");
+		htmlBuilder.append("</div>");
+		return htmlBuilder.toString();
 	}
 }

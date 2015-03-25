@@ -19,6 +19,7 @@ import javax.ws.rs.core.UriInfo;
 import edu.carleton.comp4601.assignment3.algorithms.Cluster;
 import edu.carleton.comp4601.assignment3.algorithms.KMeans;
 import edu.carleton.comp4601.assignment3.algorithms.Apriori;
+import edu.carleton.comp4601.assignment3.dao.Page;
 import edu.carleton.comp4601.assignment3.dao.Rule;
 import edu.carleton.comp4601.assignment3.dao.User;
 import edu.carleton.comp4601.assignment3.util.Utils;
@@ -35,6 +36,7 @@ public class RS {
 	final String dataFolder = "/data/comp4601a3/";
 	final int SUPPORT = 50;
 	
+	private String hostDir = "";
 	private ContentAnalyzer analyzer;
 	private String name;
 
@@ -69,15 +71,26 @@ public class RS {
 	@Produces(MediaType.TEXT_HTML)
 	public String reset(@PathParam("dir") String dir) {
 		
-		SocialGraph.getInstance().clearAssignment3Data();
-		
-		DataParser parser = new DataParser(homePath + dataFolder);
-		parser.parseAssignment3Content();
-		
 		StringBuilder htmlBuilder = new StringBuilder();
 		htmlBuilder.append("<html>");
-		htmlBuilder.append("<head><title> Done Parsing </title></head>");
-		htmlBuilder.append("<body><p>Done</p>");
+		htmlBuilder.append("<head><title> Reset </title></head>");
+		
+		if(dir != null && !dir.isEmpty()) {
+			
+			this.hostDir = dir;
+			
+			SocialGraph.getInstance().clearAssignment3Data();
+			DataParser parser = new DataParser(homePath + dataFolder);
+			parser.parseAssignment3Content();
+			
+			htmlBuilder.append("<body><p>Reset Complete</p>");
+			htmlBuilder.append("</body></html>");
+			
+			return htmlBuilder.toString();
+			
+		}
+		
+		htmlBuilder.append("<body><p>ERROR: Please add a directory to reset too</p>");
 		htmlBuilder.append("</body></html>");
 		
 		return htmlBuilder.toString();
@@ -158,7 +171,39 @@ public class RS {
 	@Produces(MediaType.TEXT_HTML)
 	public String fetch(@PathParam("user") String user, @PathParam("page") String page) {
 		
-		return "";
+		boolean ready = SocialGraph.getInstance().isContextReady() && SocialGraph.getInstance().isA3ParseFinished();
+		StringBuilder htmlBuilder = new StringBuilder();
+		
+		htmlBuilder.append("<html>");
+		htmlBuilder.append("<head><title> Fetch Page </title></head>");
+		
+		if(!ready) {
+			htmlBuilder.append("<body><p>ERROR: Please visit /context first and wait for profiles to be displayed</p>");
+			htmlBuilder.append("</body></html>");
+			return htmlBuilder.toString();
+		}
+		
+		
+		if((user != null && !user.isEmpty()) && (page != null && !page.isEmpty())) {
+			User userResult = SocialGraph.getInstance().getUserByName(user);
+			Page pageResult = SocialGraph.getInstance().getPageByName(page);
+			
+			if(pageResult == null || userResult == null) {
+				htmlBuilder.append("<body><p>404: Page or user not found</p>");
+				htmlBuilder.append("</body></html>");
+				return htmlBuilder.toString();
+			}
+			
+			//TODO: Get user cluster and display proper ad?
+			htmlBuilder.append("<div style=\"float: left; width: 300px;\"><p>Ad from category goes here</p></div>");
+			
+			htmlBuilder.append(pageResult.toHTML());
+			return htmlBuilder.toString();
+		}
+		
+		htmlBuilder.append("<body><p>ERROR: Missing parameter (user or page)</p>");
+		htmlBuilder.append("</body></html>");
+		return htmlBuilder.toString();
 	}
 	
 	@GET
@@ -166,7 +211,28 @@ public class RS {
 	@Produces(MediaType.TEXT_HTML)
 	public String advertising(@PathParam("category") String category) {
 		
-		return "";
+		boolean ready = SocialGraph.getInstance().isContextReady() && SocialGraph.getInstance().isA3ParseFinished();
+		StringBuilder htmlBuilder = new StringBuilder();
+		
+		htmlBuilder.append("<html>");
+		htmlBuilder.append("<head><title> Advertising Category </title></head>");
+		
+		if(!ready) {
+			htmlBuilder.append("<body><p>ERROR: Please visit /context first and wait for profiles to be displayed</p>");
+			htmlBuilder.append("</body></html>");
+			return htmlBuilder.toString();
+		}
+		
+		if((category != null && !category.isEmpty())) {
+			//TODO: Get category by string and get some ads for that category and display them. If cateogry is not found
+			// return an error
+			htmlBuilder.append("<div style=\"float: left; width: 300px;\"><p>Ad from category goes here</p></div>");
+			return htmlBuilder.toString();
+		}
+		
+		htmlBuilder.append("<body><p>ERROR: Missing parameter (user or page)</p>");
+		htmlBuilder.append("</body></html>");
+		return htmlBuilder.toString();
 	}
 	
 	//Assignment 4

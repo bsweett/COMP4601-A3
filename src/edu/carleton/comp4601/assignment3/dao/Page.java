@@ -85,4 +85,23 @@ public class Page {
 	public String toString() {
 		return this.title + " " + this.mainCategory.toString() + " " + this.secondaryCategory.toString();
 	}
+	
+	public String toHTML() {
+		StringBuilder htmlBuilder = new StringBuilder();
+		htmlBuilder.append("<div style=\"float: left; width: 800px;\">");
+		htmlBuilder.append("<h2>" + this.getTitle() + "</h2>");
+		htmlBuilder.append("<h4> Genre: </h4>");
+		htmlBuilder.append("<p>"+ this.mainCategory.toString() + "</p>");
+		
+		if(this.secondaryCategory != Category.NONE) {
+			htmlBuilder.append("<p>"+ this.secondaryCategory.toString() + "</p>");
+		}
+		
+		for(Review review : this.reviews) {
+			htmlBuilder.append(review.toHTML());
+		}
+		
+		htmlBuilder.append("</div>");
+		return htmlBuilder.toString();
+	}
 }

@@ -189,4 +189,12 @@ public class SocialGraph {
 		
 		return null;
 	}
+	
+	public User getUserByName(String name) {
+		return this.users.get(name);
+	}
+	
+	public Page getPageByName(String name) {
+		return this.pages.get(name);
+	}
 }
