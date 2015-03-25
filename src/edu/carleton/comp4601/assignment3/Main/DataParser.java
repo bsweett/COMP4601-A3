@@ -20,11 +20,11 @@ import edu.carleton.comp4601.assignment3.dao.User;
 public class DataParser {
 
 	private String rootDataPath;
-	private final String userPath = "users/";
-	private final String pagesPath = "pages/";
-	private final String reviewsPath = "reviews/";
-	private final String retailPath = "retail/retail.dat";
-	private final String graphPath = "graph/";
+	private final String userPath = "/users/";
+	private final String pagesPath = "/pages/";
+	private final String reviewsPath = "/reviews/";
+	private final String retailPath = "/retail/retail.dat";
+	private final String graphPath = "/graph/";
 
 	public DataParser(String rootDataPath) {
 		this.rootDataPath = rootDataPath;

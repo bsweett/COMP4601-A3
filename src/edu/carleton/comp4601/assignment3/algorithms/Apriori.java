@@ -1,7 +1,6 @@
 package edu.carleton.comp4601.assignment3.algorithms;
 
 import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -51,7 +50,6 @@ public class Apriori {
 		}
 		
 		generateRules();
-		printItemSets();
 		
 		System.out.println("Apriori is COMPLETE!");
 		SocialGraph.getInstance().setRules(rules);
@@ -255,30 +253,5 @@ public class Apriori {
 			}
 		}
 		return 0;
-	}
-	
-	private void printItemSets() throws FileNotFoundException, UnsupportedEncodingException {
-		
-		final String homePath = System.getProperty("user.home");
-		PrintWriter writer = new PrintWriter(homePath + "/data/comp4601a3/outputs/apriori.txt", "UTF-8");
-		
-		writer.println("=============================================================");
-		writer.println("   Item sets that support " + (support * 100.0f) / transactionCount + "% of transactions");
-		writer.println("=============================================================");
-		writer.println("");
-		for(Tuple<int[], Integer> itemSet: freqItemSets) {
-			int[] itemSetArray = itemSet.x;
-			
-			writer.print("Item Set: [");
-			for(int i=0; i<itemSetArray.length; i++) {
-				writer.print(" " + itemSetArray[i] + " ");
-			}
-			writer.print("] # of transactions: " + itemSet.y);
-			writer.println("");
-		}
-		writer.println("");
-		writer.println("=============================================================");
-		
-		writer.close();
 	}
 }

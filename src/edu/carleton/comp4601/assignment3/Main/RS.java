@@ -31,12 +31,11 @@ public class RS {
 	UriInfo uriInfo;
 	@Context
 	Request request;
-
+	
 	final String homePath = System.getProperty("user.home");
-	final String dataFolder = "/data/comp4601a3/";
+	final String dataFolder = homePath + "/datasets/";
 	final int SUPPORT = 50;
 	
-	private String hostDir = "";
 	private ContentAnalyzer analyzer;
 	private String name;
 
@@ -76,12 +75,12 @@ public class RS {
 		htmlBuilder.append("<head><title> Reset </title></head>");
 		
 		if(dir != null && !dir.isEmpty()) {
-			
-			this.hostDir = dir;
-			
+			System.out.println("Hello world");
 			SocialGraph.getInstance().clearAssignment3Data();
-			DataParser parser = new DataParser(homePath + dataFolder);
+			SocialGraph.getInstance().clearAssignment4Data();
+			DataParser parser = new DataParser(dataFolder + dir);
 			parser.parseAssignment3Content();
+			parser.parseAssignment4Content();
 			
 			htmlBuilder.append("<body><p>Reset Complete</p>");
 			htmlBuilder.append("</body></html>");
@@ -241,12 +240,6 @@ public class RS {
 	@Path("apriori")
 	@Produces(MediaType.TEXT_HTML)
 	public String apriori() {
-		
-		SocialGraph.getInstance().clearAssignment4Data();
-		
-		DataParser parser = new DataParser(homePath + dataFolder);
-		parser.parseAssignment4Content();
-		
 		Apriori apriori = new Apriori(SocialGraph.getInstance().getTransactions());
 		
 		try {
