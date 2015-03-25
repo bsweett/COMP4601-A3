@@ -75,7 +75,7 @@ public class RS {
 		htmlBuilder.append("<head><title> Reset </title></head>");
 		
 		if(dir != null && !dir.isEmpty()) {
-			System.out.println("Hello world");
+		
 			SocialGraph.getInstance().clearAssignment3Data();
 			SocialGraph.getInstance().clearAssignment4Data();
 			DataParser parser = new DataParser(dataFolder + dir);
