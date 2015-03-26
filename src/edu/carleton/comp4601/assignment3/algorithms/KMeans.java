@@ -8,7 +8,21 @@ import edu.carleton.comp4601.assignment3.dao.User;
 
 public class KMeans {
 
-	public int no_clusters = 15;
+	/*
+	 * -------
+	 * 04 36697
+	 * 05 36191
+	 * 06 35823
+	 * 07 32366
+	 * 08 31978
+	 * 09 31174 <--
+	 * 10 31864
+	 * 11 32199
+	 * 12 31306
+	 * 13 28912
+	 * -------
+	 */
+	public int no_clusters = 9;
 	
 	private static final Random random = new Random();
 	public List<User> allUsers;
@@ -40,6 +54,9 @@ public class KMeans {
 				total += current.distance(center);
 			}
 			
+			// Compute the ratingTotals for each cluster by adding all the user
+			// genre scores together
+			cluster.computeRatingTotalsFromUsers();
 		}
 		
 		System.out.println("Total distance: "+ total);
@@ -93,8 +110,9 @@ public class KMeans {
 	 */
 	private void updateClustersUntilNoChange(){
 		boolean unchanged = usersClusters.updateClusters();
-		while (unchanged)
+		while (unchanged) {
 			unchanged = usersClusters.updateClusters();
+		}
 	}
 
 	/**

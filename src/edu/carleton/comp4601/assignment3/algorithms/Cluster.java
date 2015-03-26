@@ -1,18 +1,22 @@
 package edu.carleton.comp4601.assignment3.algorithms;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import edu.carleton.comp4601.assignment3.dao.User;
+import edu.carleton.comp4601.assignment3.util.Category;
 
 public class Cluster {
 
 	private final List<User> users;
 	private User centroid;
+	private ArrayList<Double> ratingTotals;
 
 	public Cluster(User firstUser) {
 		users = new ArrayList<User>();
 		centroid = firstUser;
+		ratingTotals = new ArrayList<Double>(Category.rateableLength);
 	}
 
 	public User getCentroid() {
@@ -28,7 +32,7 @@ public class Cluster {
 			// Build array of every users features array
 			for (User user : users) {
 				
-				features.add(user.getFeatureRatigns());
+				features.add(user.getFeatureRatings());
 			}
 			
 			// for every user's features array compute the average and
@@ -78,6 +82,31 @@ public class Cluster {
 
 	public List<User> getUsers() {
 		return users;
+	}
+	
+	public void computeRatingTotalsFromUsers() {
+		
+		ArrayList<Double> communityRatingScores = new ArrayList<Double>(Category.rateableLength);
+		while(communityRatingScores.size() < Category.rateableLength) {
+			communityRatingScores.add(0d);
+		}
+		
+		for(User user : this.users) {
+			double[] ratings = user.getFeatureRatings();
+			System.out.println(Arrays.toString(ratings));
+			for(int i = 0; i < ratings.length; i++) {
+				double current = communityRatingScores.get(i);
+				double newNum = (ratings[i] + current);
+				communityRatingScores.set(i, newNum);
+			}
+		}
+		
+		//System.out.println("Cluster score in cluster: " + communityRatingScores.toString());
+		this.ratingTotals = communityRatingScores;
+	}
+	
+	public ArrayList<Double> getRatingTotals() {
+		return this.ratingTotals;
 	}
 
 	public String toString() {

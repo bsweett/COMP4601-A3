@@ -43,13 +43,14 @@ public class Clusters extends ArrayList<Cluster> {
 	}
 
 	public void assignPointsToClusters() {
-		for (User user : allUsers) {
+		for (User user : this.allUsers) {
 			int previousIndex = user.getLastCluster();
 			int newIndex = getNearestCluster(user);
 			
-			if (previousIndex != newIndex)
+			if (previousIndex != newIndex) {
 				this.isChanged = true;
-			
+			}
+				
 			Cluster target = get(newIndex);
 			user.update();
 			user.setCluster(newIndex);

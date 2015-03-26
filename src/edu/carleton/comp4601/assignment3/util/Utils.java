@@ -12,7 +12,7 @@ public class Utils {
 	 * @param array
 	 * @return
 	 */
-	public static int[] findTwoHighestDistinctValues(ArrayList<Integer> array) {
+	public static int[] findTopTwoGenresForPages(ArrayList<Integer> array) {
 	    int max = Integer.MIN_VALUE;
 	    int secondMax = Integer.MIN_VALUE;
 
@@ -38,6 +38,24 @@ public class Utils {
 	    } else {
 	    	return new int[] { array.indexOf(max), -1 };
 	    }
+	}
+	
+	public static int[] findTopTwoGenresForCluster(ArrayList<Double> array) {
+	    int max = Integer.MIN_VALUE;
+	    int secondMax = Integer.MIN_VALUE;
+
+	    for (Double value : array) {
+	        if (value.intValue() > max) {
+	            secondMax = max;
+	            max = value.intValue();
+	        } else if (value.intValue() > secondMax && value.intValue() < max) {
+	            secondMax = value.intValue();
+	        }
+	    }
+	    
+	    System.out.println("Max :" + max + " Min: " + secondMax);
+	    
+	    return new int[] { array.indexOf(((double)max)), array.indexOf(((double)secondMax)) };
 	}
 	
 	public static int[] stringToIntArray(String arr) {

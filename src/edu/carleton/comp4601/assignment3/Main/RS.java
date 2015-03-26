@@ -2,6 +2,7 @@ package edu.carleton.comp4601.assignment3.Main;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
@@ -19,9 +20,11 @@ import javax.ws.rs.core.UriInfo;
 import edu.carleton.comp4601.assignment3.algorithms.Cluster;
 import edu.carleton.comp4601.assignment3.algorithms.KMeans;
 import edu.carleton.comp4601.assignment3.algorithms.Apriori;
+import edu.carleton.comp4601.assignment3.dao.Advertisement;
 import edu.carleton.comp4601.assignment3.dao.Page;
 import edu.carleton.comp4601.assignment3.dao.Rule;
 import edu.carleton.comp4601.assignment3.dao.User;
+import edu.carleton.comp4601.assignment3.util.Category;
 import edu.carleton.comp4601.assignment3.util.Utils;
 
 @Path("/rs")
@@ -153,6 +156,9 @@ public class RS {
 		
 		KMeans algo = new KMeans(new ArrayList<User>(SocialGraph.getInstance().getUsers().values()));
 		List<Cluster> groups = algo.run();
+		SocialGraph.getInstance().setCommunity(groups);
+		SocialGraph.getInstance().setCommunityReady(true);
+		
 		for(int i = 0; i < groups.size(); i++) {
 			Cluster cluster = groups.get(i);
 			htmlBuilder.append("<tr>");
@@ -171,14 +177,14 @@ public class RS {
 	@Produces(MediaType.TEXT_HTML)
 	public String fetch(@PathParam("user") String user, @PathParam("page") String page) {
 		
-		boolean ready = SocialGraph.getInstance().isContextReady() && SocialGraph.getInstance().isA3ParseFinished();
+		boolean ready = SocialGraph.getInstance().isContextReady() && SocialGraph.getInstance().isA3ParseFinished() && SocialGraph.getInstance().isCommunityReady();
 		StringBuilder htmlBuilder = new StringBuilder();
 		
 		htmlBuilder.append("<html>");
 		htmlBuilder.append("<head><title> Fetch Page </title></head>");
 		
 		if(!ready) {
-			htmlBuilder.append("<body><p>ERROR: Please visit /context first and wait for profiles to be displayed</p>");
+			htmlBuilder.append("<body><p>ERROR: Please visit /community first and wait for clusters to be displayed</p>");
 			htmlBuilder.append("</body></html>");
 			return htmlBuilder.toString();
 		}
@@ -194,8 +200,8 @@ public class RS {
 				return htmlBuilder.toString();
 			}
 			
-			//TODO: Get user cluster and display proper ad?
-			htmlBuilder.append("<div style=\"float: left; width: 300px;\"><p>Ad from category goes here</p></div>");
+			String ad = SocialGraph.getInstance().getAdvertForUserAndPage(userResult, pageResult);
+			htmlBuilder.append("<div style=\"float: left; width: 300px;\"><p>"+ ad + "</p></div>");
 			
 			htmlBuilder.append(pageResult.toHTML());
 			return htmlBuilder.toString();
@@ -224,13 +230,35 @@ public class RS {
 		}
 		
 		if((category != null && !category.isEmpty())) {
-			//TODO: Get category by string and get some ads for that category and display them. If cateogry is not found
-			// return an error
-			htmlBuilder.append("<div style=\"float: left; width: 300px;\"><p>Ad from category goes here</p></div>");
-			return htmlBuilder.toString();
+			try {
+				int result = Integer.parseInt(category);
+				Category cat = Category.fromInteger(result);
+				Set<Advertisement> results = SocialGraph.getInstance().getAdFactory().getAdsForCategory(cat);
+				
+				if(results.size() == 0) {
+					htmlBuilder.append("<body><p>No adverts found for number</p>");
+					htmlBuilder.append("</body></html>");
+					return htmlBuilder.toString();
+				}
+				
+				htmlBuilder.append("<body>");
+				for(Advertisement ad : results) {
+					htmlBuilder.append("<div style=\"float: left; width: 500;\">"+ ad.toHTML() + "</div>");
+				}
+				
+				htmlBuilder.append("</body></html>");
+				return htmlBuilder.toString();
+			} catch (NumberFormatException | NullPointerException e) {
+				
+				htmlBuilder.append("<body><p>ERROR: Please enter a path containing a numbered catergory (0 - 12)</p>");
+				htmlBuilder.append("</body></html>");
+				return htmlBuilder.toString();
+			}
+			
+			
 		}
 		
-		htmlBuilder.append("<body><p>ERROR: Missing parameter (user or page)</p>");
+		htmlBuilder.append("<body><p>ERROR: Missing parameter category</p>");
 		htmlBuilder.append("</body></html>");
 		return htmlBuilder.toString();
 	}

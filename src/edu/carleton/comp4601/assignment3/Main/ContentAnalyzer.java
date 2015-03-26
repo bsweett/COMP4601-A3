@@ -128,7 +128,7 @@ public class ContentAnalyzer {
 				}
 			}
 			
-			int[] results = Utils.findTwoHighestDistinctValues(categoryCountsPerPage);
+			int[] results = Utils.findTopTwoGenresForPages(categoryCountsPerPage);
 			page.setMainCategory(Category.fromInteger(results[0]));
 			page.setSecondaryCategory(Category.fromInteger(results[1]));	
 			

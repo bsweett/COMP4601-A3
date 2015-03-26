@@ -2,16 +2,22 @@ package edu.carleton.comp4601.assignment3.Main;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import org.jgrapht.graph.DefaultEdge;
 import org.jgrapht.graph.Multigraph;
 
+import edu.carleton.comp4601.assignment3.algorithms.Cluster;
+import edu.carleton.comp4601.assignment3.dao.Advertisement;
 import edu.carleton.comp4601.assignment3.dao.Page;
 import edu.carleton.comp4601.assignment3.dao.Review;
 import edu.carleton.comp4601.assignment3.dao.Rule;
 import edu.carleton.comp4601.assignment3.dao.Transaction;
 import edu.carleton.comp4601.assignment3.dao.User;
+import edu.carleton.comp4601.assignment3.util.AdvertisementFactory;
+import edu.carleton.comp4601.assignment3.util.Category;
+import edu.carleton.comp4601.assignment3.util.Utils;
 
 public class SocialGraph {
 
@@ -20,12 +26,15 @@ public class SocialGraph {
 	private ConcurrentHashMap<String, User> users;
 	private ConcurrentHashMap<String, Page> pages;
 	private ArrayList<Review> reviews;
+	private AdvertisementFactory adFactory;
+	private List<Cluster> clusters;
 	private ArrayList<Rule> rules;
 	private ConcurrentHashMap<Integer, Transaction> transactions;
 	
 	private boolean a3Ready = false;
 	private boolean a4Ready = false;
 	private boolean contextReady = false;
+	private boolean communityReady = false;
 	
 	private final int CONFIDENCE = 20;
 	
@@ -48,7 +57,9 @@ public class SocialGraph {
 		this.graph = new Multigraph<String, DefaultEdge> (DefaultEdge.class);
 		this.users = new ConcurrentHashMap<String, User>();
 		this.pages = new ConcurrentHashMap<String, Page>();
+		this.adFactory = new AdvertisementFactory();
 		this.reviews = new ArrayList<Review>();
+		this.clusters = new ArrayList<Cluster>();
 		this.transactions = new ConcurrentHashMap<Integer, Transaction>();
 		this.rules = new ArrayList<Rule>();
 	}
@@ -138,6 +149,14 @@ public class SocialGraph {
 		this.contextReady = ready;
 	}
 	
+	public boolean isCommunityReady() {
+		return communityReady;
+	}
+
+	public void setCommunityReady(boolean communityReady) {
+		this.communityReady = communityReady;
+	}
+
 	public boolean isA3ParseFinished() {
 		return this.a3Ready;
 	}
@@ -196,5 +215,51 @@ public class SocialGraph {
 	
 	public Page getPageByName(String name) {
 		return this.pages.get(name);
+	}
+	
+	public void setCommunity(List<Cluster> clusters) {
+		this.clusters = clusters;
+	}
+	
+	public List<Cluster> getCommunity() {
+		return this.clusters;
+	}
+	
+	public AdvertisementFactory getAdFactory() {
+		return this.adFactory;
+	}
+	
+	public String getAdvertForUserAndPage(User user, Page page) {
+		Cluster cluster = this.clusters.get(user.getCluster());
+		
+		ArrayList<Double> ratings = cluster.getRatingTotals();
+		
+		int[] results = Utils.findTopTwoGenresForCluster(ratings);
+		System.out.println(results[0]);
+		System.out.println(results[1]);
+		
+		Category mainClusterCat = Category.fromInteger(results[0]);
+		Category secondClusterCat = Category.fromInteger(results[1]);
+		Category pageCat = page.getMainCategory();
+		
+		Advertisement ad = null;
+		
+		System.out.println("MC: " + mainClusterCat.toString());
+		System.out.println("SC: " + secondClusterCat.toString());
+		System.out.println("Page: " + page.toString());
+		
+		if((pageCat == mainClusterCat) || (pageCat == secondClusterCat)) {
+			// page cat
+			ad = this.adFactory.getAdForCategories(pageCat, Category.NONE);
+		} else { 
+			// main cluster combined page cat
+			ad = this.adFactory.getAdForCategories(mainClusterCat, pageCat);
+		}
+		
+		if (ad == null) {
+			return "Error: No Ad";
+		}
+		
+		return ad.getAdvert();
 	}
 }

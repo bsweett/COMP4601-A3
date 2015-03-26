@@ -127,12 +127,23 @@ public class User {
 
 		Map<Category, Integer> counts = new HashMap<Category, Integer>();
 		
+		//Keep track of the categories we've already counted
+		ArrayList<Category> alreadyCounted = new ArrayList<Category>();
+		
 		int index = 0;
 		for(Category c : this.allFeatures) {
+			
+			// If we've counted this type already skip to the next one
+			if(alreadyCounted.contains(c)) {
+				continue;
+			}
+			
 			int frequency = Collections.frequency(this.allFeatures, c);
 			counts.put(c, frequency);
 			
 			this.featureRatings[index] = (double) frequency;
+			alreadyCounted.add(c);
+			index++;
 		}
 		
 		Entry<Category,Integer> maxEntry = new AbstractMap.SimpleEntry<Category, Integer>(Category.NONE, 0);
@@ -200,7 +211,7 @@ public class User {
 		return this.reviews.add(review);
 	}
 	
-	public double[] getFeatureRatigns() {
+	public double[] getFeatureRatings() {
 		return this.featureRatings;
 	}
 	
@@ -208,8 +219,8 @@ public class User {
 		double rtn = 0.0;
 		// Assumes a and b have same number of features
 		for (int i = 0; i < this.featureRatings.length; i++) {
-			rtn += (this.featureRatings[i] - b.getFeatureRatigns()[i] )
-					* (this.featureRatings[i]  - b.getFeatureRatigns()[i]);
+			rtn += (this.featureRatings[i] - b.getFeatureRatings()[i] )
+					* (this.featureRatings[i]  - b.getFeatureRatings()[i]);
 		}
 		return Math.sqrt(rtn);
 	}
