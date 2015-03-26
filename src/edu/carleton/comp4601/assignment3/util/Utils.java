@@ -1,6 +1,8 @@
 package edu.carleton.comp4601.assignment3.util;
 
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class Utils {
 
@@ -71,5 +73,25 @@ public class Utils {
 		}
 		
 		return results;
+	}
+	
+	public static Set<Integer> intArrayToSet(int[] array) {
+		Set<Integer> set = new HashSet<Integer>();
+		
+		for(int i=0; i<array.length; i++) {
+			set.add(array[i]);
+		}
+		
+		return set;
+	}
+	
+	public static int[] setToIntArray(Set<Integer> set) {
+		int[] array = new int[set.size()];
+		int count = 0;
+		for(int i: set) {
+			array[count] = i;
+			count++;
+		}
+		return array;
 	}
 }
