@@ -37,7 +37,7 @@ public class RS {
 	
 	final String homePath = System.getProperty("user.home");
 	final String dataFolder = homePath + "/datasets/";
-	final int SUPPORT = 50;
+	final int SUPPORT = 5;
 	
 	private ContentAnalyzer analyzer;
 	private String name;

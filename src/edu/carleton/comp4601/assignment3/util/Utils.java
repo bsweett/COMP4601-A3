@@ -61,8 +61,7 @@ public class Utils {
 	}
 	
 	public static int[] stringToIntArray(String arr) {
-		
-		String[] items = arr.split("(?!^)");
+		String[] items = arr.split("\\|");
 
 		int[] results = new int[items.length];
 
