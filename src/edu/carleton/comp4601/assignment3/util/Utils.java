@@ -42,6 +42,7 @@ public class Utils {
 	    }
 	}
 	
+	//Finds the top two genres for a cluster
 	public static int[] findTopTwoGenresForCluster(ArrayList<Double> array) {
 	    int max = Integer.MIN_VALUE;
 	    int secondMax = Integer.MIN_VALUE;
@@ -60,6 +61,7 @@ public class Utils {
 	    return new int[] { array.indexOf(((double)max)), array.indexOf(((double)secondMax)) };
 	}
 	
+	//Converts a string delimited by | into an array
 	public static int[] stringToIntArray(String arr) {
 		String[] items = arr.split("\\|");
 
@@ -74,6 +76,7 @@ public class Utils {
 		return results;
 	}
 	
+	//Convert from integer array to set if integers
 	public static Set<Integer> intArrayToSet(int[] array) {
 		Set<Integer> set = new HashSet<Integer>();
 		
@@ -84,6 +87,7 @@ public class Utils {
 		return set;
 	}
 	
+	//Convert from setof integers to integer array
 	public static int[] setToIntArray(Set<Integer> set) {
 		int[] array = new int[set.size()];
 		int count = 0;

@@ -21,7 +21,6 @@ import edu.carleton.comp4601.assignment3.util.Utils;
 
 public class SocialGraph {
 
-	// String = username, edge is a relation to another user
 	private Multigraph<String, DefaultEdge> graph;
 	private ConcurrentHashMap<String, User> users;
 	private ConcurrentHashMap<String, Page> pages;
@@ -197,6 +196,7 @@ public class SocialGraph {
 		this.rules = rules;
 	}
 	
+	//Finds the rules that match the given product array
 	public ArrayList<int[]> giveSuggestions(int[] products) {
 		ArrayList<int[]> results = new ArrayList<int[]>();
 		Arrays.sort(products);
