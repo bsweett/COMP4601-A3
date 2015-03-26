@@ -314,7 +314,7 @@ public class RS {
 	@Path("suggest/{products}")
 	@Produces(MediaType.TEXT_HTML)
 	public String suggest(@PathParam("products") String products) {
-		boolean ready = SocialGraph.getInstance().isA4ParseFinished();
+		boolean ready = SocialGraph.getInstance().isA4RulesReady();
 		StringBuilder htmlBuilder = new StringBuilder();
 
 		if(!ready) {

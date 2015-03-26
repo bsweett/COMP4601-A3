@@ -32,6 +32,7 @@ public class SocialGraph {
 	
 	private boolean a3Ready = false;
 	private boolean a4Ready = false;
+	private boolean a4RulesReady = false;
 	private boolean contextReady = false;
 	private boolean communityReady = false;
 	
@@ -260,5 +261,13 @@ public class SocialGraph {
 		}
 		
 		return ad.getAdvert();
+	}
+
+	public boolean isA4RulesReady() {
+		return a4RulesReady;
+	}
+
+	public void setA4RulesReady(boolean a4RulesReady) {
+		this.a4RulesReady = a4RulesReady;
 	}
 }

@@ -54,7 +54,7 @@ public class Apriori {
 
 		
 		SocialGraph.getInstance().setRules(rules);
-		SocialGraph.getInstance().setA4Ready(true);
+		SocialGraph.getInstance().setA4RulesReady(true);
 		
 		System.out.println("Apriori is COMPLETE!");
 		

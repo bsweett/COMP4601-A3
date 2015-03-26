@@ -61,7 +61,7 @@ public class DataParser {
 		
 		try {
 			parseRetailData();
-			
+			SocialGraph.getInstance().setA4Ready(true);
 			return true;
 		} catch (IOException e) {
 			e.printStackTrace();
